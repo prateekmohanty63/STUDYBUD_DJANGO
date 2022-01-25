@@ -1,8 +1,9 @@
+from email import message
 from http.client import HTTPResponse
 from multiprocessing import context
 from django.shortcuts import render,redirect
 from .models import Message, Room,Topic
-from .forms import RoomForm
+from .forms import RoomForm,MessageForm
 from django.db.models import Q
 from django.contrib.auth.models import User
 from django.contrib import messages
@@ -83,13 +84,14 @@ def home(request):
 
     topics=Topic.objects.all()
     room_count=rooms.count()
+    room_messages=Message.objects.all()
 
-    context={'rooms':rooms,'topics':topics,'room_count':room_count}
+    context={'rooms':rooms,'topics':topics,'room_count':room_count,'room_messages':room_messages}
     return render(request,'base/home.html',context)
 
 def room(request,pk):
     room=Room.objects.get(id=pk)
-    room_messages=room.message_set.all().order_by('-created')
+    room_messages=room.message_set.all()
     
     # adding participants to a room who messaged
     participants=room.participants.all()
@@ -179,3 +181,27 @@ def deleteMessage(request,pk):
         message.delete()
         return redirect('home')
     return render(request,'base/delete.html',{'obj':message})
+
+def updateMessage(request,pk):
+
+    message=Message.objects.get(id=pk)
+    form=MessageForm(instance=message)
+
+    if request.user!=message.user:
+        return HttpResponse('You are not allowed to perform this action!')
+        messages.error(request,'Sorry only the room creator can delete a room')
+        return redirect('home')
+    
+    if request.method=='GET':
+        return render(request,'base/message_form.html')
+
+    
+    if request.method=='POST':
+        form=MessageForm(request.POST,instance=message)
+
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+
+    context={'form':form}
+    return render(request,'base/message_form.html',context)

@@ -15,7 +15,8 @@ urlpatterns=[
 
 
   #CRUD OPERATION ON MESSAGES
-  path('delete-message?<str:pk>',views.deleteMessage,name='delete-message'),
+  path('delete-message/<str:pk>',views.deleteMessage,name='delete-message'),
+  path('update-message/<str:pk>',views.updateMessage,name="update-message"),
 
     
      path('login/',views.loginPage,name="login"),
