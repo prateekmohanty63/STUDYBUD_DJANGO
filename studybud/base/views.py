@@ -1,6 +1,7 @@
 from email import message
 from http.client import HTTPResponse
 from multiprocessing import context
+from os import name
 from django.shortcuts import render,redirect
 from .models import Message, Room,Topic
 from .forms import RoomForm,MessageForm
@@ -125,8 +126,11 @@ def userProfile(request,pk):
 @login_required(login_url='login')
 def createRoom(request):
     form=RoomForm()
+    topics=Topic.objects.all()
     
     if request.method=='POST':
+        topic_name=request.POST.get('topic')
+        topic,created=Topic.objects.get_or_create(name=topic_name)
         form=RoomForm(request.POST)
 
         if form.is_valid():
@@ -137,7 +141,7 @@ def createRoom(request):
             return redirect('home')
         
 
-    context={'form':form}
+    context={'form':form,'topics':topics}
     return render(request,'base/room_form.html',context)
 
 
@@ -146,6 +150,7 @@ def updateRoom(request,pk):
 
     room=Room.objects.get(id=pk)
     form=RoomForm(instance=room)
+    topics=Topic.objects.all()
 
     if request.user!=room.host:
         return HttpResponse('You are not allowed to perform this action!')
@@ -158,7 +163,7 @@ def updateRoom(request,pk):
         if form.is_valid():
             form.save()
             return redirect('home')
-    context={'form':form}
+    context={'form':form,'topics':topics}
     return render(request,'base/room_form.html',context)
 
 @login_required(login_url='login')
