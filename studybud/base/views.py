@@ -244,3 +244,10 @@ def updateUser(request):
 
     return render(request,'base/update-user.html',context)
 
+
+
+def topicsPage(request):
+    topics=Topic.objects.all()
+    context={'topcis':topics}
+    return render(request,'base/topics.html',context)
+

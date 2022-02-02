@@ -23,6 +23,8 @@ urlpatterns=[
   path('profile/<str:pk>',views.userProfile,name="user-profile"),
   path('update-user/',views.updateUser,name='update-user'),
 
+  # TOPIC
+  path('topics/',views.topicsPage,name='topics'),
     
      path('login/',views.loginPage,name="login"),
      path('logout/',views.logoutUser,name="logout"),
