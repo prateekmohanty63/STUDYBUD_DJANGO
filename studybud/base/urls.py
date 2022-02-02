@@ -21,6 +21,7 @@ urlpatterns=[
 
   # USER PROFILE
   path('profile/<str:pk>',views.userProfile,name="user-profile"),
+  path('update-user/',views.updateUser,name='update-user'),
 
     
      path('login/',views.loginPage,name="login"),
